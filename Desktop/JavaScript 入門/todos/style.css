@@ -1,0 +1,103 @@
+@charset "UTF-8";
+body{
+    background-color: #dddddd;
+    font-family:"游ゴシック体","Yu Gothic";
+    text-align: center
+}
+header h1{
+    color:#962E1B;
+    font-size:4rem
+}
+#form {
+    display: flex;
+    justify-content: center;
+}
+
+#toggle-all {
+    width: 50px;
+    border: 1px solid #aaa;
+    border-right: none;
+    background: white;
+    font-size: 28px;
+}
+
+#form input[name="word"] {
+    width: 450px;
+    box-sizing: border-box;
+    border: 1px solid #aaa;
+    border-left: none;
+    font-size: 30px;
+    margin:0;
+
+}
+
+#output{
+     width: 500px;
+    max-width: 90%;
+    margin: 0px auto;
+    padding: 0;
+    list-style: none;
+}
+#output li {
+    margin-bottom: 1px;
+    padding: 15px;
+font-size: 20px;
+    background-color: #ffffff;
+    text-align: left;
+}
+
+.controls{
+    display:flex;
+    align-items:center;
+    justify-content: center;
+    gap:10px;
+    background-color:#ffffff;
+    height:40px;
+   width:500px;
+   margin:0 auto;
+}
+
+#all input, #active input, #completed input, #clearcompleted input{
+    
+    background-color:#ffffff;
+    
+}
+
+#all.selected input,
+#active.selected input,
+#completed.selected input {
+    border-color: #c44; 
+    border-radius: 3px;
+}
+
+
+
+#output input[type="checkbox"] {
+    appearance: none;     
+    width: 24px;
+    height: 24px;
+    border: 2px solid #aaa;
+    border-radius: 50%;     /* 丸くする */
+    background-color: white;
+    cursor: pointer;
+    vertical-align: middle;
+}
+#output input[type="checkbox"]:checked {
+    border-color: #5a9c85;
+    background-color: #5a9c85;
+}
+
+#output input[type="checkbox"]:checked::after {
+    content: "✓";
+    display: block;
+    color: white;
+    text-align: center;
+    line-height: 20px;
+}
+
+#output input[type="checkbox"]:checked + span {
+    text-decoration:line-through;
+}
+
+
+

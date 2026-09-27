@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>todoリスト</title>
+        <meta name="description" content="todoリスト">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <link rel="stylesheet" href="style.css">
+        </head>
+     <body>
+        <header class="header">
+            <h1>
+                todos
+                </h1>
+        </header>
+<main>
+<form action="#" id="form" class="container">
+    <input type="button" value="⌄" id="toggle-all">
+        <input type="text" name="word" placeholder="What needs to be done?">
+</form>
+<ul id="output" class="container">
+
+</ul>
+<div class="controls">
+<p id="counter"></p>
+<form action="#" id="all">
+    <input type="submit" value="All">
+    </form>
+<form action="#" id="active">
+    <input type="submit" value="Active">
+    </form>
+<form action="#" id="completed">
+    <input type="submit" value="Completed">
+    </form>
+<form action=# id='clearcompleted'>
+    <input type="submit" value="Clear completed">
+</form>
+</div>  
+</main>
+<footer>
+    </footer>
+
+ <script>
+    'use strict'
+   
+document.getElementById('form').onsubmit=function(event){
+
+    event.preventDefault();
+const input=document.getElementById('form').word.value;
+ const li= `<li><input type="checkbox"><span>${input}</span></li>`
+document.getElementById('output').insertAdjacentHTML('afterbegin',li)
+
+const items = document.querySelectorAll('#output li');
+
+document.getElementById('all').onsubmit=function(event){
+    event.preventDefault();
+    
+    for (const li of items) {
+        li.hidden = false;
+    }
+}
+
+document.getElementById('active').onsubmit=function(event){
+    event.preventDefault();
+
+for (const li of items){        
+     const checkbox=li.querySelector('input[type=checkbox]')       
+       li.hidden=checkbox.checked;
+    }
+}
+
+document.getElementById('completed').onsubmit = function(event) {
+    event.preventDefault();
+
+    for (const li of items) {
+        const checkbox = li.querySelector('input[type="checkbox"]');
+
+        li.hidden = !checkbox.checked;
+    }
+};
+
+const count=document.querySelectorAll(
+    '#output input[type="checkbox"]:not(:checked)'
+).length
+document.getElementById('counter').textContent=count+'items left    '
+
+
+document.getElementById('form').word.value=''
+
+
+
+}
+document.getElementById('output').onchange=function(){
+    const count=document.querySelectorAll(
+    '#output input[type="checkbox"]:not(:checked)'
+).length
+document.getElementById('counter').textContent=count+'items left    '
+}
+
+document.getElementById('clearcompleted').onsubmit = function(event) {
+    event.preventDefault();
+
+    const items = document.querySelectorAll('#output li');
+
+    for (const li of items) {
+        const checkbox = li.querySelector('input[type="checkbox"]');
+       if (checkbox.checked) {
+            li.remove();
+    }
+}
+}
+
+document.getElementById('toggle-all').onclick=function(event){
+    event.preventDefault();
+    const checkboxes=document.querySelectorAll('#output input[type=checkbox]');
+    for(const checkbox of checkboxes){
+    checkbox.checked=true
+    }
+
+
+}
+
+
+
+</script>
+</body>
+</html>
