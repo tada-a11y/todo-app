@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>todoリスト2</title>
+        <meta name="description" content="todoリスト">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <link rel="stylesheet" href="style.css">
+        </head>
+     <body>
+        <header class="header">
+            <h1>
+                todos
+             </h1>
+        </header>
+<main>
+<form action="#" id="form" class="container">
+    <input type="button" value="⌄" id="toggle-all"><!--全選択-->
+        <input type="text" name="word" placeholder="What needs to be done?" id="todo-input">
+</form>
+
+<!--項目を表示-->
+<ul id="output" class="container">
+
+</ul>
+<div class="controls">
+
+<!--やることの残り数-->
+<p id="counter"></p>
+
+<!--選別-->
+<form action="#" id="all">
+    <input type="submit" value="All">
+    </form>
+<form action="#" id="active">
+    <input type="submit" value="Active">
+    </form>
+<form action="#" id="completed">
+    <input type="submit" value="Completed">
+    </form>
+<form action=# id='clearcompleted'>
+    <input type="submit" value="Clear completed">
+
+</form>
+</div>  
+</main>
+<script type="module" src="./main.js"></script>
+</body>
+</html>
