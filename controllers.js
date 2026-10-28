@@ -2,7 +2,7 @@ import * as model from "./models.js";
 import { renderTodos } from "./views.js";
 
 
-function getFilterFromUrl() {
+function getFilterStatusFromUrl() {
     if (location.hash === "#/active") {
         return "active";
     }
@@ -14,10 +14,14 @@ function getFilterFromUrl() {
     return "all";
 }
 
-let filter = getFilterFromUrl();
+model.setSelectedView(getFilterStatusFromUrl());
 
 export function updateView() {
     const todos = model.getTodos();
+
+    const filter = model.selectedViewStatus.find(function(status) {
+    return status.selected;
+}).name;
 
      for (const name of ["all", "active", "completed", "toggle-all"]) {
         if (todos.length === 0) {
@@ -79,9 +83,12 @@ if (todos.length > 0) {
     counter.textContent = "";
 }
 
-    for (const name of ["all", "active", "completed"]) {
-        document.getElementById(name).classList.toggle("selected", filter === name);
-    }
+    model.selectedViewStatus.forEach(function(status) {
+    document.getElementById(status.name).classList.toggle(
+        "selected",
+        status.selected
+    );
+});
 }
 
 export function setupController() {
@@ -106,21 +113,21 @@ export function setupController() {
         updateView();
     };
 
-    for (const name of ["all", "active", "completed"]) {
-    document.getElementById(name).onsubmit = event => {
+    model.selectedViewStatus.forEach(function(status) {
+    document.getElementById(status.name).onsubmit = event => {
         event.preventDefault();
 
-      if (name === "all") {
-    location.hash = "#/";
-} else {
-    location.hash = "#/" + name;
-}
+        if (status.name === "all") {
+            location.hash = "#/";
+        } else {
+            location.hash = "#/" + status.name;
+        }
     };
-}
+});
 
 
 window.addEventListener("hashchange", function() {
-    filter = getFilterFromUrl();
+    model.setSelectedView(getFilterStatusFromUrl());
     updateView();
 });
 }

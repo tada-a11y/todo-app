@@ -27,3 +27,13 @@ export function toggleAllTodos() {
     todos.forEach(t => t.completed = completed);
 }
 
+export const selectedViewStatus = 
+[{name: "all", selected: true}, 
+    {name: "active", selected: false},
+     {name: "completed", selected: false}];
+
+export function setSelectedView(name) {
+    selectedViewStatus.forEach(function(status) {
+        status.selected = status.name === name;
+    });
+}
