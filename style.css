@@ -101,6 +101,6 @@ font-size: 20px;
 
 #output {
     display:flex;
-    flex-direction:column-reverse;
+    flex-direction:column;
 }
 

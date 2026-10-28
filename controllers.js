@@ -2,14 +2,27 @@ import * as model from "./models.js";
 import { renderTodos } from "./views.js";
 
 
-let filter = "all";
+function getFilterFromUrl() {
+    if (location.hash === "#/active") {
+        return "active";
+    }
+
+    if (location.hash === "#/completed") {
+        return "completed";
+    }
+
+    return "all";
+}
+
+let filter = getFilterFromUrl();
 
 export function updateView() {
     const todos = model.getTodos();
 
-     for (const name of ["all", "active", "completed"]) {
+     for (const name of ["all", "active", "completed", "toggle-all"]) {
         if (todos.length === 0) {
             document.getElementById(name).style.display = "none";
+        
         } else {
             document.getElementById(name).style.display = "";
         }
@@ -22,6 +35,7 @@ export function updateView() {
 
     if (completedTodos.length === 0) {
         document.getElementById("clearcompleted").style.display = "none";
+        
     } else {
         document.getElementById("clearcompleted").style.display = "";
     }
@@ -93,10 +107,20 @@ export function setupController() {
     };
 
     for (const name of ["all", "active", "completed"]) {
-        document.getElementById(name).onsubmit = event => {
-            event.preventDefault();
-            filter = name;
-            updateView();
-        };
-    }
+    document.getElementById(name).onsubmit = event => {
+        event.preventDefault();
+
+      if (name === "all") {
+    location.hash = "#/";
+} else {
+    location.hash = "#/" + name;
+}
+    };
+}
+
+
+window.addEventListener("hashchange", function() {
+    filter = getFilterFromUrl();
+    updateView();
+});
 }

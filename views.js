@@ -29,7 +29,7 @@ export function renderTodos(todos, change, remove, rename) {
                 // 置き換えによるblurで再び実行されるのを防ぐ
                 input.onblur = null;
 
-                const title = input.value;
+                const title = input.value.trim();
 
                  if (title) {
                     span.textContent = title;
@@ -44,6 +44,15 @@ export function renderTodos(todos, change, remove, rename) {
 
             input.onkeydown = event => {
                 if (event.isComposing) return;
+
+                if (event.key === "Escape") {
+        event.preventDefault();
+
+        input.onblur = null;
+
+        input.replaceWith(span);
+        return;
+    }
 
                 if (event.key === "Enter") {
                     event.preventDefault();
