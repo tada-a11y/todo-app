@@ -1,4 +1,5 @@
-import { setupController, updateView } from "./controllers.js";
+import { renderTodos } from "./views.js";
+import {setupEventHandlers} from "./controllers.js";
 
-setupController();
-updateView();
+setupEventHandlers();
+renderTodos();
