@@ -1,6 +1,4 @@
-let todos = [];
-
-export const getTodos = () => todos;
+export let todos = [];
 
 export function addTodo(title) {
 	todos.push({ title: title, completed: false });
@@ -38,3 +36,5 @@ export function setSelectedView(name) {
 		status.selected = status.name === name;
 	});
 }
+
+

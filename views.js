@@ -1,8 +1,33 @@
-export function renderTodos(todos, change, remove, rename) {
+import * as model from "./models.js";
+
+
+export function renderTodos() {
+	const todos = model.todos;
 	const list = document.getElementById("output");
 	list.innerHTML = "";
 
-	for (const todo of todos) {
+	 const filter = model.selectedViewStatus.find(function (status) {
+		return status.selected;
+	}).name;
+
+ const completedTodos = todos.filter(function (todo) {
+		return todo.completed;
+	});
+	
+
+	const visibleTodos = todos.filter(function(todo) {
+    if (filter === "all") {
+        return true;
+    }
+
+    if (filter === "completed") {
+        return todo.completed;
+    }
+
+    return !todo.completed;
+});
+
+	for (const todo of visibleTodos) {
 		const li = document.createElement("li");
 		const check = document.createElement("input");
 		const span = document.createElement("span");
@@ -10,13 +35,19 @@ export function renderTodos(todos, change, remove, rename) {
 
 		check.type = "checkbox";
 		check.checked = todo.completed;
-		check.onchange = () => change(todo, check.checked);
+		check.onchange = () => {
+    model.setTodoCompleted(todo, check.checked);
+    renderTodos();
+};
 
 		span.textContent = todo.title;
 
 		button.type = "button";
 		button.textContent = "×";
-		button.onclick = () => remove(todo);
+		button.onclick = () => {
+    model.deleteTodo(todo);
+    renderTodos();
+};
 
 		span.ondblclick = () => {
 			const input = document.createElement("input");
@@ -34,10 +65,11 @@ export function renderTodos(todos, change, remove, rename) {
 				if (title) {
 					span.textContent = title;
 					input.replaceWith(span);
-					rename(todo, title);
+					model.renameTodo(todo, title);
 				} else {
-					remove(todo);
+					model.deleteTodo(todo);
 				}
+				renderTodos()
 			};
 
 			input.onblur = () => finish();
@@ -63,5 +95,37 @@ export function renderTodos(todos, change, remove, rename) {
 
 		li.append(check, span, button);
 		list.append(li);
+
+		
+	};
+	
+	
+// ボタンを表示するかどうかの制御
+	if (completedTodos.length === 0) {
+		document.getElementById("clearcompleted").style.display = "none";
+	} else {
+		document.getElementById("clearcompleted").style.display = "";
 	}
+
+
+		const selectbuttons=["all","active","completed","toggle-all"];
+	for (const name of selectbuttons) {
+		if (todos.length === 0) {
+			document.getElementById(name).style.display = "none";
+		} else {
+			document.getElementById(name).style.display = "";
+		}
+	}
+
+	const counter = document.getElementById("counter");
+
+	if (todos.length > 0) {
+		counter.textContent = ` ${todos.filter((t) => !t.completed).length} items left`;
+	} else {
+		
+		counter.textContent = "";
+	}
+
+	//リンクの名前変更
+	
 }
