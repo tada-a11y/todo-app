@@ -1,71 +1,67 @@
 export function renderTodos(todos, change, remove, rename) {
-    const list = document.getElementById("output");
-    list.innerHTML = "";
+	const list = document.getElementById("output");
+	list.innerHTML = "";
 
-    for (const todo of todos) {
-        const li = document.createElement("li");
-        const check = document.createElement("input");
-        const span = document.createElement("span");
-        const button = document.createElement("button");
+	for (const todo of todos) {
+		const li = document.createElement("li");
+		const check = document.createElement("input");
+		const span = document.createElement("span");
+		const button = document.createElement("button");
 
-        check.type = "checkbox";
-         check.checked = todo.completed;
-          check.onchange = () => change(todo, check.checked);
+		check.type = "checkbox";
+		check.checked = todo.completed;
+		check.onchange = () => change(todo, check.checked);
 
-        span.textContent = todo.title;
+		span.textContent = todo.title;
 
-        button.type = "button";
-        button.textContent = "×";
-        button.onclick = () => remove(todo);
+		button.type = "button";
+		button.textContent = "×";
+		button.onclick = () => remove(todo);
 
-        span.ondblclick = () => {
-            const input = document.createElement("input");
-         input.type = "text";
-        input.value = todo.title;
-        span.replaceWith(input);
-         input.focus();
+		span.ondblclick = () => {
+			const input = document.createElement("input");
+			input.type = "text";
+			input.value = todo.title;
+			span.replaceWith(input);
+			input.focus();
 
-            const finish = () => {
-                // 置き換えによるblurで再び実行されるのを防ぐ
-                input.onblur = null;
+			const finish = () => {
+				// 置き換えによるblurで再び実行されるのを防ぐ
+				input.onblur = null;
 
-                const title = input.value.trim();
+				const title = input.value.trim();
 
-                 if (title) {
-                    span.textContent = title;
-                    input.replaceWith(span);
-                    rename(todo, title);
-                } else {
-                    remove(todo);
-                }
-            };
+				if (title) {
+					span.textContent = title;
+					input.replaceWith(span);
+					rename(todo, title);
+				} else {
+					remove(todo);
+				}
+			};
 
-            input.onblur = () => finish();
+			input.onblur = () => finish();
 
-            input.onkeydown = event => {
-                if (event.isComposing) return;
+			input.onkeydown = (event) => {
+				if (event.isComposing) return;
 
-                if (event.key === "Escape") {
-        event.preventDefault();
+				if (event.key === "Escape") {
+					event.preventDefault();
 
-        input.onblur = null;
+					input.onblur = null;
 
-        input.replaceWith(span);
-        return;
-    }
+					input.replaceWith(span);
+					return;
+				}
 
-                if (event.key === "Enter") {
-                    event.preventDefault();
-                    finish();
-                }
+				if (event.key === "Enter") {
+					event.preventDefault();
+					finish();
+				}
+			};
+		};
 
-                
-            };
-        };
-
-        li.append(check, span, button);
-        list.append(li);
-    }
-
-    
+		li.append(check, span, button);
+		list.append(li);
+	}
 }
