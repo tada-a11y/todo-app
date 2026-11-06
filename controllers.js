@@ -1,32 +1,29 @@
 import * as model from "./models.js";
-import { renderTodos } from "./views.js";
-
-
+import { refreshView } from "./views.js";
 
 export function setupEventHandlers() {
 	model.setSelectedView(getFilterStatusFromUrl());
 	document.getElementById("form").onsubmit = (event) => {
 		event.preventDefault();
 		const input = document.getElementById("todo-input");
-		if (!input.value.trim()) return;
+		const trimedValue = input.value.trim();
+		if (!trimedValue) return;
 
-		model.addTodo(input.value.trim());
+		model.addTodo(trimedValue);
 		input.value = "";
-		renderTodos();
+		refreshView();
 	};
 
 	document.getElementById("toggle-all").onclick = () => {
 		model.toggleAllTodos();
-		renderTodos();
+		refreshView();
 	};
 
 	document.getElementById("clearcompleted").onsubmit = (event) => {
 		event.preventDefault();
 		model.clearCompletedTodos();
-		renderTodos();
+		refreshView();
 	};
-
-
 
 	//hashchangeイベントのリスナーを追加
 	model.selectedViewStatus.forEach(function (status) {
@@ -42,16 +39,16 @@ export function setupEventHandlers() {
 	});
 
 	function getFilterStatusFromUrl() {
-	if (location.hash === "#/active") {
-		return "active";
-	}
+		if (location.hash === "#/active") {
+			return "active";
+		}
 
-	if (location.hash === "#/completed") {
-		return "completed";
-	}
+		if (location.hash === "#/completed") {
+			return "completed";
+		}
 
-	return "all";
-}
+		return "all";
+	}
 	window.addEventListener("hashchange", function () {
 		model.setSelectedView(getFilterStatusFromUrl());
 		renderTodos();

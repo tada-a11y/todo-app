@@ -1,11 +1,8 @@
 import * as model from "./models.js";
 
-export function renderTodos() {
+export function refreshView() {
 	const todos = model.todos;
-	const list = document.getElementById("output");
-	list.innerHTML = "";
-
-	const filter = model.selectedViewStatus.find(function (status) {
+	const selectedViewName = model.selectedViewStatus.find(function (status) {
 		return status.selected;
 	}).name;
 
@@ -14,17 +11,46 @@ export function renderTodos() {
 	});
 
 	const visibleTodos = todos.filter(function (todo) {
-		if (filter === "all") {
+		if (selectedViewName === "all") {
 			return true;
 		}
 
-		if (filter === "completed") {
+		if (selectedViewName === "completed") {
 			return todo.completed;
 		}
 
 		return !todo.completed;
 	});
 
+	renderTodos(visibleTodos);
+	// ボタンを表示するかどうかの制御
+	if (completedTodos.length === 0) {
+		document.getElementById("clearcompleted").style.display = "none";
+	} else {
+		document.getElementById("clearcompleted").style.display = "";
+	}
+
+	const selectbuttons = ["all", "active", "completed", "toggle-all"];
+	for (const name of selectbuttons) {
+		if (todos.length === 0) {
+			document.getElementById(name).style.display = "none";
+		} else {
+			document.getElementById(name).style.display = "";
+		}
+	}
+
+	const counter = document.getElementById("counter");
+
+	if (todos.length > 0) {
+		counter.textContent = ` ${todos.filter((t) => !t.completed).length} items left`;
+	} else {
+		counter.textContent = "";
+	}
+}
+
+function renderTodos(visibleTodos) {
+	const list = document.getElementById("output");
+	list.innerHTML = "";
 	for (const todo of visibleTodos) {
 		const li = document.createElement("li");
 		const check = document.createElement("input");
@@ -35,7 +61,7 @@ export function renderTodos() {
 		check.checked = todo.completed;
 		check.onchange = () => {
 			model.setTodoCompleted(todo, check.checked);
-			renderTodos();
+			refreshView();
 		};
 
 		span.textContent = todo.title;
@@ -44,7 +70,7 @@ export function renderTodos() {
 		button.textContent = "×";
 		button.onclick = () => {
 			model.deleteTodo(todo);
-			renderTodos();
+			refreshView();
 		};
 
 		span.ondblclick = () => {
@@ -67,7 +93,7 @@ export function renderTodos() {
 				} else {
 					model.deleteTodo(todo);
 				}
-				renderTodos();
+				refreshView();
 			};
 
 			input.onblur = () => finish();
@@ -94,30 +120,4 @@ export function renderTodos() {
 		li.append(check, span, button);
 		list.append(li);
 	}
-
-	// ボタンを表示するかどうかの制御
-	if (completedTodos.length === 0) {
-		document.getElementById("clearcompleted").style.display = "none";
-	} else {
-		document.getElementById("clearcompleted").style.display = "";
-	}
-
-	const selectbuttons = ["all", "active", "completed", "toggle-all"];
-	for (const name of selectbuttons) {
-		if (todos.length === 0) {
-			document.getElementById(name).style.display = "none";
-		} else {
-			document.getElementById(name).style.display = "";
-		}
-	}
-
-	const counter = document.getElementById("counter");
-
-	if (todos.length > 0) {
-		counter.textContent = ` ${todos.filter((t) => !t.completed).length} items left`;
-	} else {
-		counter.textContent = "";
-	}
-
-	//リンクの名前変更
 }
