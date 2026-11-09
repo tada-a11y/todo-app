@@ -1,102 +1,56 @@
 import * as model from "./models.js";
-import { renderTodos } from "./views.js";
+import { refreshView } from "./views.js";
 
+export function setupEventHandlers() {
+	model.setSelectedView(getFilterStatusFromUrl());
+	document.getElementById("form").onsubmit = (event) => {
+		event.preventDefault();
+		const input = document.getElementById("todo-input");
+		const trimedValue = input.value.trim();
+		if (!trimedValue) return;
 
-let filter = "all";
+		model.addTodo(trimedValue);
+		input.value = "";
+		refreshView();
+	};
 
-export function updateView() {
-    const todos = model.getTodos();
+	document.getElementById("toggle-all").onclick = () => {
+		model.toggleAllTodos();
+		refreshView();
+	};
 
-     for (const name of ["all", "active", "completed"]) {
-        if (todos.length === 0) {
-            document.getElementById(name).style.display = "none";
-        } else {
-            document.getElementById(name).style.display = "";
-        }
-    }
+	document.getElementById("clearcompleted").onsubmit = (event) => {
+		event.preventDefault();
+		model.clearCompletedTodos();
+		refreshView();
+	};
 
-    const completedTodos = todos.filter(function(todo) {
-        return todo.completed;
-    });
+	//hashchangeイベントのリスナーを追加
+	model.selectedViewStatus.forEach(function (status) {
+		document.getElementById(status.name).onsubmit = (event) => {
+			event.preventDefault();
 
+			if (status.name === "all") {
+				location.hash = "#/";
+			} else {
+				location.hash = "#/" + status.name;
+			}
+		};
+	});
 
-    if (completedTodos.length === 0) {
-        document.getElementById("clearcompleted").style.display = "none";
-    } else {
-        document.getElementById("clearcompleted").style.display = "";
-    }
+	function getFilterStatusFromUrl() {
+		if (location.hash === "#/active") {
+			return "active";
+		}
 
-    const visible = todos.filter(function (t) {
-    if (filter === "all") {
-        return true;
-    }
+		if (location.hash === "#/completed") {
+			return "completed";
+		}
 
-    if (filter === "completed") {
-        return t.completed;
-    }
-
-    return !t.completed;
-});
-    renderTodos(
-        visible,
-        (todo, checked) => {
-             model.setTodoCompleted(todo, checked);
-            updateView();
-        },
-        todo => {
-              model.deleteTodo(todo);
-            updateView();
-        },
-        (todo, title) => {
-               model.renameTodo(todo, title);
-              updateView();  
-        }
-    );
-
-const counter = document.getElementById("counter");
-
-if (todos.length > 0) {
-    
-
-    counter.textContent =
-        ` ${todos.filter(t => !t.completed).length} items left`;
-} else {
-    // Todoがなければ隠す
-    counter.textContent = "";
-}
-
-    for (const name of ["all", "active", "completed"]) {
-        document.getElementById(name).classList.toggle("selected", filter === name);
-    }
-}
-
-export function setupController() {
-    document.getElementById("form").onsubmit = event => {
-        event.preventDefault();
-        const input = document.getElementById("todo-input");
-        if (!input.value.trim()) return;
-
-        model.addTodo(input.value.trim());
-        input.value = "";
-        updateView();
-    };
-
-    document.getElementById("toggle-all").onclick = () => {
-          model.toggleAllTodos();
-          updateView();
-    };   
-
-    document.getElementById("clearcompleted").onsubmit = event => {
-        event.preventDefault();
-        model.clearCompletedTodos();
-        updateView();
-    };
-
-    for (const name of ["all", "active", "completed"]) {
-        document.getElementById(name).onsubmit = event => {
-            event.preventDefault();
-            filter = name;
-            updateView();
-        };
-    }
+		return "all";
+	}
+	window.addEventListener("hashchange", function () {
+		model.setSelectedView(getFilterStatusFromUrl());
+		refreshView();
+	});
 }
