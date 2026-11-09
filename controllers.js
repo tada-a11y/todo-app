@@ -51,6 +51,6 @@ export function setupEventHandlers() {
 	}
 	window.addEventListener("hashchange", function () {
 		model.setSelectedView(getFilterStatusFromUrl());
-		renderTodos();
+		refreshView();
 	});
 }
