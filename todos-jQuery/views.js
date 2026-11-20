@@ -21,6 +21,9 @@ export function refreshView() {
 
 		return !todo.completed;
 	});
+	for (const { name, selected } of model.selectedViewStatus) {
+		$(`#${name}`).toggleClass("selected", selected);
+	}
 
 	renderTodos(visibleTodos);
 
@@ -32,6 +35,7 @@ export function refreshView() {
 	const remaining = todos.length - completedTodos.length;
 	$("#counter").text(todos.length > 0 ? `${remaining} items left` : "");
 }
+
 
 function renderTodos(visibleTodos) {
 	const list = $("#output").empty();
@@ -54,7 +58,7 @@ function renderTodos(visibleTodos) {
 			});
 
 		// 名前をダブルクリックしたら入力欄に変える
-		span.on("dblclick", function () {
+		function startEditing() {
 			const input = $("<input>", { type: "text" }).val(todo.title);
 
 			function finish() {
@@ -87,10 +91,15 @@ function renderTodos(visibleTodos) {
 
 			span.replaceWith(input);
 			input.trigger("focus");
-		});
+		}
+		span.on("dblclick", startEditing);
 
-		// 3つの要素を1行にまとめて一覧に入れる
-		const li = $("<li>").append(check, span, button);
+		const editButton = $("<button>", { type: "button" })
+			.text("編集")
+			.on("click", startEditing);
+
+		// 4つの要素を1行にまとめて一覧に入れる
+		const li = $("<li>").append(check, span, button, editButton);
 		list.append(li);
 	}
 }
