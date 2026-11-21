@@ -1,62 +1,123 @@
-export function renderTodos(todos, change, remove, rename) {
-    const list = document.getElementById("output");
-    list.innerHTML = "";
+import * as model from "./models.js";
 
-    for (const todo of todos) {
-        const li = document.createElement("li");
-        const check = document.createElement("input");
-        const span = document.createElement("span");
-        const button = document.createElement("button");
+export function refreshView() {
+	const todos = model.todos;
+	const selectedViewName = model.selectedViewStatus.find(function (status) {
+		return status.selected;
+	}).name;
 
-        check.type = "checkbox";
-         check.checked = todo.completed;
-          check.onchange = () => change(todo, check.checked);
+	const completedTodos = todos.filter(function (todo) {
+		return todo.completed;
+	});
 
-        span.textContent = todo.title;
+	const visibleTodos = todos.filter(function (todo) {
+		if (selectedViewName === "all") {
+			return true;
+		}
 
-        button.type = "button";
-        button.textContent = "×";
-        button.onclick = () => remove(todo);
+		if (selectedViewName === "completed") {
+			return todo.completed;
+		}
 
-        span.ondblclick = () => {
-            const input = document.createElement("input");
-         input.type = "text";
-        input.value = todo.title;
-        span.replaceWith(input);
-         input.focus();
+		return !todo.completed;
+	});
 
-            const finish = () => {
-                // 置き換えによるblurで再び実行されるのを防ぐ
-                input.onblur = null;
+	renderTodos(visibleTodos);
+	// ボタンを表示するかどうかの制御
+	if (completedTodos.length === 0) {
+		document.getElementById("clearcompleted").style.display = "none";
+	} else {
+		document.getElementById("clearcompleted").style.display = "";
+	}
 
-                const title = input.value;
+	const selectbuttons = ["all", "active", "completed", "toggle-all"];
+	for (const name of selectbuttons) {
+		if (todos.length === 0) {
+			document.getElementById(name).style.display = "none";
+		} else {
+			document.getElementById(name).style.display = "";
+		}
+	}
 
-                 if (title) {
-                    span.textContent = title;
-                    input.replaceWith(span);
-                    rename(todo, title);
-                } else {
-                    remove(todo);
-                }
-            };
+	const counter = document.getElementById("counter");
 
-            input.onblur = () => finish();
+	if (todos.length > 0) {
+		counter.textContent = ` ${todos.filter((t) => !t.completed).length} items left`;
+	} else {
+		counter.textContent = "";
+	}
+}
 
-            input.onkeydown = event => {
-                if (event.isComposing) return;
+function renderTodos(visibleTodos) {
+	const list = document.getElementById("output");
+	list.innerHTML = "";
+	for (const todo of visibleTodos) {
+		const li = document.createElement("li");
+		const check = document.createElement("input");
+		const span = document.createElement("span");
+		const button = document.createElement("button");
 
-                if (event.key === "Enter") {
-                    event.preventDefault();
-                    finish();
-                }
+		check.type = "checkbox";
+		check.checked = todo.completed;
+		check.onchange = () => {
+			model.setTodoCompleted(todo, check.checked);
+			refreshView();
+		};
 
-                
-            };
-        };
+		span.textContent = todo.title;
 
-        li.append(check, span, button);
-        list.append(li);
-    }
+		button.type = "button";
+		button.textContent = "×";
+		button.onclick = () => {
+			model.deleteTodo(todo);
+			refreshView();
+		};
 
-    
+		span.ondblclick = () => {
+			const input = document.createElement("input");
+			input.type = "text";
+			input.value = todo.title;
+			span.replaceWith(input);
+			input.focus();
+
+			const finish = () => {
+				// 置き換えによるblurで再び実行されるのを防ぐ
+				input.onblur = null;
+
+				const title = input.value.trim();
+
+				if (title) {
+					span.textContent = title;
+					input.replaceWith(span);
+					model.renameTodo(todo, title);
+				} else {
+					model.deleteTodo(todo);
+				}
+				refreshView();
+			};
+
+			input.onblur = () => finish();
+
+			input.onkeydown = (event) => {
+				if (event.isComposing) return;
+
+				if (event.key === "Escape") {
+					event.preventDefault();
+
+					input.onblur = null;
+
+					input.replaceWith(span);
+					return;
+				}
+
+				if (event.key === "Enter") {
+					event.preventDefault();
+					finish();
+				}
+			};
+		};
+
+		li.append(check, span, button);
+		list.append(li);
+	}
 }
